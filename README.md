@@ -2,6 +2,10 @@
 
 A Claude Code skill to generate infographic storyboard posters and video prompts for short videos (under 60 seconds).
 
+## Example output
+
+![Simple storyboard example](simple-storyboard.png)
+
 ## What it does
 
 Given a video concept, this skill produces:
