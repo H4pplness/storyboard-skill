@@ -1,273 +1,254 @@
 ---
-name: storyboard-poster-en
-description: >
-  Create a complete prompt to generate an infographic storyboard poster for short videos (under 60 seconds).
-  Use when the user wants: a storyboard for food, product, character, process, or any short-form content
-  that needs scene-by-scene visualization — characters are described directly in text, no existing prototype needed.
-  After generating the storyboard, automatically generate a concise video prompt for AI video apps
-  like Seedance, Kling, Runway, and Pika — including overall style/setting and per-scene camera + action descriptions.
-  Output is: (1) storyboard prompt for image-gen AI, and (2) video prompt for video-gen AI.
-  If the user already has a character prototype / concept sheet, use the character-prototype skill instead.
-  Trigger whenever the user says: storyboard, shot breakdown, scene planning, video prompt, short video,
-  reel planning, shooting script, shot list, or asks to visualize a video concept scene by scene.
+name: storyboard-poster
+description: "Build prompt sets for short video storyboards. Use when the user wants a storyboard for food, character, product, process, or any short-form content needing scene-by-scene visualization. Default output: a storyboard poster prompt plus a video prompt for AI video apps (Seedance, Kling, Runway, Pika). If the user explicitly asks for a character reference sheet, prepend that prompt. Trigger on: storyboard, shot breakdown, scene planning, video prompt, short video, reel planning, shooting script, shot list, visualize a video concept."
 ---
 
-# Storyboard Poster Skill (English)
+# Storyboard Poster Skill
 
-This skill helps you build a prompt to generate an infographic storyboard poster —
-16:9 wide layout, multi-panel, with header/footer containing cinematography notes.
+Produces up to three prompt blocks the user can paste into image / video AIs:
 
-Characters are described entirely in text inside the Common Brief.
-If the user already has a character prototype, use the **character-prototype** skill instead.
+1. **Character Reference Sheet** — only when the user asks for one
+2. **Storyboard Poster** — always produced (16:9 infographic, multi-panel)
+3. **Video Prompt** — always produced (Seedance / Kling / Runway / Pika)
+
+Default behavior: produce blocks 2 and 3. Add block 1 only on explicit request.
 
 ---
 
-## Prompt Structure — 3 Layers
+## Block 1 — Character Reference Sheet Prompt *(on request only)*
+
+A single landscape image containing: hero pose · front/side/back turnarounds · 2 detail crops (face + costume) · expression chart (4+ bust portraits) · footer strip (palette + materials + tagline). Same render style as the storyboard.
+
+Template:
 
 ```
-[LAYER 1 — AI Instructions]
-[LAYER 2 — Common Brief]
-[LAYER 3 — Panel Descriptions]
+Create a professional character reference sheet as a single cohesive poster.
+Format: landscape, [BACKGROUND], thin black borders between zones, bold sans-serif labels.
+ONE single image — do not split into separate images.
+
+STYLE: [RENDER_STYLE — e.g. Pixar 3D stylized / hyper-realistic / anime cel-shaded /
+flat vector / Ghibli hand-painted]
+Lighting: [studio soft-box / overhead spot / natural window]
+
+CHARACTER:
+• Name: [name]
+• Age & build: [age, gender, build]
+• Skin tone: [specific descriptor]
+• Hair: [color, length, style]
+• Eyes: [color + quality]
+• Signature feature: [one identifier]
+• Costume: [top to bottom with materials and colors]
+• Color palette: [4–6 colors, hex preferred]
+
+ZONES:
+• Hero pose: full-body 3/4 view (30°), pose relevant to the video concept
+• Turnarounds: front (0°) / side (90°) / back (180°), neutral A-pose, same scale,
+  guide lines at crown/shoulder/hip/heel
+• Detail crops: (1) face — signature feature + skin texture; (2) costume — fabric + key accessory
+• Expression chart: [N≥4] bust portraits, 3/4 angle, identical lighting,
+  labeled with emotions matching the video's arc
+• Footer strip: color swatches · material callouts · one-line tagline
 ```
+
+Once generated, the user uploads the sheet as an image reference for the storyboard image gen.
 
 ---
 
-## Layer 1 — AI Instructions
+## Block 2 — Storyboard Poster Prompt
+
+Template:
 
 ```
-Create a crisp, clean infographic storyboard poster.
+Create a crisp infographic storyboard poster.
 Layout: wide 16:9, white background, black borders, bold black typography.
-Render style: [RENDER_STYLE] — see Common Brief for color palette.
+Render style: [RENDER_STYLE — must match the reference sheet if one exists]
 
-Top header must include:
-• Title of the video (in ALL CAPS)
-• Total video time (e.g. TOTAL VIDEO TIME: 12 SECONDS)
-• Shot count + 3 mood adjectives (e.g. 8 SHOTS · SHARP · PRECISE · HYPNOTIC)
-• Legend icons row: ACTION · HEAT · TIME HINT · INGREDIENT
+[IF reference sheet exists, include:]
+CHARACTER CONSISTENCY: All panels featuring [name] must match the attached reference
+sheet exactly — same hair, skin, costume, signature feature. Use the hero pose as anchor.
 
-Each panel must include:
-• Panel number and short title
-• Main visual described in the panel
-• 1–2 legend icon tags relevant to that shot
+HEADER:
+• Title in ALL CAPS
+• TOTAL VIDEO TIME: [Y] SECONDS
+• [N] SHOTS · [mood word 1] · [mood word 2] · [mood word 3]
+• Legend row: [4 short icon labels relevant to the video — see legend guidance below]
 
-Footer must include:
-• VIDEO FLOW: shot breakdown formula
-• CAMERA TIPS: key angles used per shot type
-• LIGHT & STYLE: color palette + lighting character
-• DIRECTOR NOTES: one-line creative summary of the whole piece
-```
-
-> **`[RENDER_STYLE]`** — replace with your desired render style:
-> `premium Pixar 3D stylized` · `flat vector illustration` · `hyper-realistic` ·
-> `anime cel-shaded` · `minimal line art, monochrome`
-
----
-
-## Layer 2 — Common Brief
-
-```
 COMMON BRIEF:
-• Character: [gender, age, appearance, outfit, dominant expression]
-• Setting: [location, fixed props, lighting style]
-• Color palette: [4–7 dominant colors/materials]
-• Tone & feel: [2–3 emotional keywords]
-• Total duration: [N shots × ~Xs = Y seconds]
-• Arc summary: [1 sentence emotional journey: from X → to Y]
+• Character: [one sentence — or "see attached reference sheet"]
+• Setting: [location, props, lighting]
+• Color palette: [4–7 colors, must match reference sheet]
+• Tone: [2–3 keywords]
+• Arc: [one sentence from X → Y]
+
+PANELS:
+Shot [N] — [scene name]:
+[Main action]. [Color/texture detail]. [Character state if present]. [Arc role] [CAMERA]
+...
+Mark the climactic shot with ★.
+
+FOOTER:
+• VIDEO FLOW: [N] shots × ~[X]s = [Y]s. [One-sentence arc recap]
+• CAMERA TIPS: [angles used and when]
+• LIGHT & STYLE: [palette + lighting summary]
+• DIRECTOR NOTES: [one creative sentence]
 ```
 
----
-
-## Layer 3 — Panel Descriptions
-
-```
-Shot [N] — [SCENE NAME]:
-[Main action]. [Color/texture detail]. [Role in arc] [CAMERA ANGLE]
-```
-
-**Camera angle codes:**
+### Camera codes
 
 | Code | Meaning |
 |---|---|
-| `[OVH]` | Overhead locked — straight down from above |
-| `[LOW]` | Dramatic low angle — looking up |
-| `[SIDE]` | Side profile — lateral view |
-| `[CLOSE]` | Tight close-up — macro, fine detail |
-| `[POV]` | Point of view — character's perspective |
+| `[OVH]` | Overhead — straight down |
+| `[LOW]` | Low angle — looking up |
+| `[SIDE]` | Side profile — lateral |
+| `[CLOSE]` | Tight close-up |
+| `[POV]` | First-person view |
+
+### Legend row guidance
+
+Pick 4 short labels relevant to the video type:
+- **Food/cooking**: `ACTION · HEAT · TIME · INGREDIENT`
+- **Character**: `ACTION · EMOTION · LOCATION · MOMENT`
+- **Product**: `FEATURE · ANGLE · CONTEXT · DETAIL`
+- **Process**: `INPUT · STEP · TOOL · OUTPUT`
 
 ---
 
-## Pre-Send Checklist
+## Block 3 — Video Prompt (Seedance / Kling / Runway / Pika)
 
-- [ ] Shot count in header matches actual panel count
-- [ ] At least 1 shot marked as "hero frame" / climax
-- [ ] Arc summary accurately reflects journey from Shot 1 → Shot N
-- [ ] Each shot has: action + environment detail + arc role + camera angle
-- [ ] Common Brief includes: character · setting · color palette · tone · duration
-- [ ] Colors in Common Brief match colors described in panels
-
----
-
-## Bonus Step — Generate Video Prompt (Seedance / Kling / Runway / Pika)
-
-After completing the storyboard prompt, **automatically generate a video prompt** for AI video apps.
-
-> Goal: concise, clear prompt — enough for AI video to understand context, style, and action per scene.
-> Focus on: **setting · visual style · camera · action**.
-
-### Video Prompt Structure
+Template:
 
 ```
-VIDEO PROMPT — [VIDEO TITLE]
+VIDEO PROMPT — [TITLE]
+
+CHARACTER NOTE: [name] — [one sentence: hair + key costume + signature feature]
+[Omit this line if no character]
 
 STYLE & SETTING:
-[1–2 sentences: overall context, render style, color tone, dominant lighting]
+[1–2 sentences: location, render style, color tone, lighting]
 
 SCENES:
 
-Scene [N] — [SCENE NAME] (~[X]s):
-Camera: [angle + movement]
-Action: [description of the main action in this scene]
-
-[Repeat for remaining scenes]
+Scene [N] — [name] (~[X]s):
+Camera: [angle + movement, e.g. "low angle, slow push-in"]
+Character: [state/expression — omit line if no character in this shot]
+Action: [one sentence, strong active verb]
+...
 ```
 
-### Writing Guide
-
-**STYLE & SETTING** (1–2 sentences):
-- What the setting is, where it is, what time of day
-- Visual style: `Pixar 3D` · `cinematic live-action` · `anime` · `flat 2D` · `hyper-realistic`
-- Dominant color tone and lighting
-
-**Camera** (concise):
-- Angle: `overhead` · `low angle` · `side profile` · `close-up` · `POV`
-- Movement: `static` · `slow push-in` · `tracking` · `pan left/right` · `tilt up/down`
-
-**Action** (1 sentence, strong verbs):
-- Describe the **main action** happening in the scene
-- Favor specific verbs: `slices` · `walks forward` · `lifts` · `turns to face camera`
-
-### Video Prompt Checklist
-
-- [ ] STYLE & SETTING is brief — 2 sentences max
-- [ ] Each scene has all 3 parts: Camera · Action · Suggested duration
-- [ ] Camera includes both angle + movement
-- [ ] Action uses specific verbs, describes **action** not appearance
-- [ ] Total scene durations match the storyboard
+Rules: camera must include angle AND movement. Action uses specific verbs (slices, lifts, turns), never describes appearance. Scene durations must sum to the storyboard total.
 
 ---
 
-## Variants by Video Type
+## Quick variants
 
-### Food / Cooking Video
-- Render style: `Pixar 3D` or `hyper-realistic`
-- Arc: raw ingredients → finished dish → first bite
-- Hero frame: the slice / plating moment / first bite
-
-### Character / Character Showcase Video
-- Render style: match the character's personality
-- Arc: establish setting → signature action → emotional reveal
-- Hero frame: close-up expression or signature move
-- Note: if you need high character consistency with an existing design, use the **character-prototype** skill
-
-### Product Showcase Video
-- Render style: `clean studio product photography, white cyclorama`
-- Character: optional — can use hands-only
-- Arc: unboxing → features → in-use → beauty shot
-
-### Process / How-It-Works Video
-- Render style: `flat vector, bold outlines, infographic style`
-- No fixed character needed
-- Arc: problem → steps → result
+| Video type | Reference sheet? | Render style hint | Arc pattern |
+|---|---|---|---|
+| Character / narrative | On request | match personality | setup → signature action → reveal |
+| Food / cooking | On request (only if chef's face shown) | Pixar 3D or hyper-realistic | raw → finished → first bite |
+| Product | Skip | clean studio product photography | unbox → features → use → beauty |
+| Process | Skip | flat vector infographic | problem → steps → result |
 
 ---
 
-## Full Example Prompt — The Sushi Chef
+## Single checklist
+
+- [ ] Shot count in header matches actual panel count
+- [ ] Climactic shot marked with ★
+- [ ] Each shot has: action + environment + character state (if present) + camera angle
+- [ ] Color palette consistent across reference sheet (if used), storyboard panels, and video prompt
+- [ ] If reference sheet used, `CHARACTER CONSISTENCY` block is in the storyboard prompt
+- [ ] Video prompt: every scene has Camera + Action (+ Character if relevant) + duration
+- [ ] Scene durations sum to total video time
+
+---
+
+## Example — The Sushi Chef (storyboard + video prompt)
+
+### Storyboard Poster Prompt
 
 ```
-Create a crisp, clean infographic storyboard poster.
+Create a crisp infographic storyboard poster.
 Layout: wide 16:9, white background, black borders, bold black typography.
 Render style: premium Pixar 3D stylized.
 
-Top header: • THE SUSHI CHEF • TOTAL VIDEO TIME: 12 SECONDS
+HEADER:
+• THE SUSHI CHEF
+• TOTAL VIDEO TIME: 12 SECONDS
 • 8 SHOTS · SHARP · PRECISE · HYPNOTIC
-• Legend icons: ACTION · HEAT · TIME HINT · INGREDIENT
-
----
+• Legend row: ACTION · HEAT · TIME · INGREDIENT
 
 COMMON BRIEF:
-• Character: young Japanese male, short black hair, pristine white chef jacket,
-  calm focused expression, always at the same omakase counter
-• Setting: clean hinoki wood counter, bamboo rolling mat, warm overhead spot lighting
-• Color palette: coral salmon · pure ivory rice · jade green avocado ·
-  glossy jet-black nori · pale hinoki wood · soft ivory steam
-• Tone & feel: sharp · meditative · deeply satisfying
-• Total duration: 8 shots × ~1.5s = 12 seconds
-• Arc: from raw rice to the first bite — one roll, eight perfect pieces
-
----
+• Character: young Japanese male chef, white double-breasted jacket, charcoal apron,
+  white headband, short black hair, focused calm
+• Setting: hinoki wood counter, bamboo rolling mat, warm overhead spot lighting
+• Color palette: coral salmon · ivory rice · jade avocado · jet-black nori ·
+  hinoki wood · soft ivory steam
+• Tone: sharp · meditative · deeply satisfying
+• Arc: raw rice to first bite — one roll, eight perfect pieces
 
 PANELS:
+Shot 1 — Rice fold: Hands fold steaming rice with bamboo paddle. Warm ivory. Calm opening. [OVH]
+Shot 2 — Nori held up: Sheet held to light, jet-black and translucent. Graphic. [SIDE]
+Shot 3 — Rice spread: Paddle drags rice across black nori. White on black contrast. [OVH]
+Shot 4 — Fillings placed: Salmon, avocado, cucumber lined up. Most colorful panel. [SIDE]
+Shot 5 — The roll: Bamboo mat presses forward, even pressure. Compression. [SIDE]
+Shot 6 — The cut ★: Knife down, cross-section revealed — coral, jade, white, black. Hero. [LOW]
+Shot 7 — The lineup: Eight pieces upright on hinoki board. Beauty shot. [OVH]
+Shot 8 — The eat: Chef lifts piece, eyes close. Steam rising. Grace note. [CLOSE]
 
-Shot 1 — Rice fold: Bamboo paddle mid-fold in wooden bowl, steam rising. Warm ivory tones. Calm opening. [OVH]
-Shot 2 — Nori held up: Sheet held to light — jet black, translucent, glossy. Graphic and striking. [SIDE]
-Shot 3 — Rice spread: Paddle dragging rice across black nori in one motion. White on black. Contrast shot. [OVH]
-Shot 4 — Fillings placed: Salmon strips, avocado, cucumber lined up. Coral and jade — most colorful panel. [SIDE]
-Shot 5 — The roll: Bamboo mat pressed forward, even pressure, mat texture visible. Compression. [SIDE]
-Shot 6 — The cut ★: Knife down, cross-section revealed. Salmon coral · jade green · white rice · black nori. Hero frame. [LOW]
-Shot 7 — The lineup: Eight pieces upright in a row on hinoki board. Overhead beauty shot, glistening. [OVH]
-Shot 8 — The eat: Chef lifts piece, eyes close slowly. Quiet satisfaction. Steam rising. Closing grace note. [CLOSE]
-
----
-
-Footer:
+FOOTER:
 • VIDEO FLOW: 8 shots × ~1.5s = 12 seconds. Rice to roll to silence.
-• CAMERA TIPS: overhead locked for rice + lineup, low angle for the cut, side for compression, close-up for eat.
-• LIGHT & STYLE: warm overhead spot, coral salmon, jade green, pure white, jet-black nori, pale hinoki wood.
-• DIRECTOR NOTES: one chef, one roll, eight perfect pieces. Sharp, calm, deeply satisfying.
+• CAMERA TIPS: overhead for prep + lineup, low for the cut, side for roll, close for eat.
+• LIGHT & STYLE: warm overhead spot, coral salmon, jade, white, jet-black, hinoki.
+• DIRECTOR NOTES: one chef, one roll, eight perfect pieces.
 ```
 
----
-
-## Full Example Video Prompt — The Sushi Chef
+### Video Prompt
 
 ```
 VIDEO PROMPT — THE SUSHI CHEF
 
+CHARACTER NOTE: Japanese male chef — short black hair, pristine white chef jacket
+with charcoal apron, white headband across forehead.
+
 STYLE & SETTING:
 Pixar 3D stylized. Clean omakase counter with warm overhead spotlighting.
-Warm ivory and coral tones, minimal background, calm and meditative atmosphere.
+Ivory and coral tones, meditative atmosphere.
 
 SCENES:
 
-Scene 1 — Rice fold (~2s):
+Scene 1 — Rice fold (~1.5s):
 Camera: overhead, static
-Action: Bamboo paddle folds steaming rice in wooden bowl, soft steam rises
+Action: Bamboo paddle folds steaming rice in wooden bowl
 
 Scene 2 — Nori held up (~1.5s):
 Camera: side profile, static
-Action: Sheet of nori held up to light, translucent and glossy, graphic contrast
+Character: focused, eyes locked on nori
+Action: Chef holds nori sheet up to light, translucent against the spot
 
 Scene 3 — Rice spread (~1.5s):
 Camera: overhead, slow push-in
-Action: Paddle drags white rice across black nori in one clean motion
+Action: Paddle drags rice across black nori in one clean motion
 
-Scene 4 — Fillings placed (~2s):
+Scene 4 — Fillings placed (~1.5s):
 Camera: side profile, static
-Action: Salmon strips, avocado, and cucumber lined up in a row on the nori
+Action: Chef places salmon, avocado, cucumber in precise row on the nori
 
-Scene 5 — The roll (~2s):
+Scene 5 — The roll (~1.5s):
 Camera: side profile, static
 Action: Bamboo mat presses forward, rolling tightly with even pressure
 
-Scene 6 — The cut (~2s):
+Scene 6 — The cut (~1.5s):
 Camera: low angle, slow push-in
-Action: Knife comes down cleanly, cross-section of roll revealed — hero moment
+Character: intense concentration
+Action: Knife comes down cleanly, cross-section of roll revealed
 
-Scene 7 — The lineup (~2s):
+Scene 7 — The lineup (~1.5s):
 Camera: overhead, slow pull-back
-Action: Eight sushi pieces stand upright in a row on hinoki wood board
+Action: Eight sushi pieces stand upright in a row on hinoki board
 
-Scene 8 — The eat (~2s):
+Scene 8 — The eat (~1.5s):
 Camera: close-up, static
-Action: Chef lifts one piece slowly, eyes close softly — quiet satisfaction
+Character: quiet satisfaction, eyes close softly
+Action: Chef lifts one piece slowly to his lips, steam rising
 ```

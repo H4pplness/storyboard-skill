@@ -1,264 +1,254 @@
 ---
 name: storyboard-poster
-description: >
-  Tạo prompt hoàn chỉnh để gen một infographic storyboard poster cho video ngắn (dưới 60 giây).
-  Dùng khi người dùng muốn: storyboard cho video ẩm thực, sản phẩm, nhân vật, quy trình, hoặc
-  bất kỳ nội dung ngắn nào cần visualize cảnh-theo-cảnh — mô tả nhân vật trực tiếp bằng văn bản,
-  không cần character prototype có sẵn.
-  Sau khi tạo storyboard, tự động gen thêm video prompt ngắn gọn cho các app gen video như
-  Seedance, Kling, Runway, Pika — gồm style/setting tổng thể và mô tả camera + action từng scene.
-  Output là: (1) storyboard prompt cho image-gen AI, và (2) video prompt cho video-gen AI.
-  Nếu người dùng đã có character prototype / concept sheet, dùng skill character-prototype thay thế.
+description: "Xây dựng bộ prompt cho storyboard video ngắn. Dùng khi người dùng muốn storyboard cho video ẩm thực, nhân vật, sản phẩm, quy trình, hoặc bất kỳ nội dung ngắn nào cần trực quan hóa theo từng cảnh. Đầu ra mặc định: một prompt poster storyboard và một video prompt cho các app AI tạo video (Seedance, Kling, Runway, Pika). Nếu người dùng yêu cầu character reference sheet, thêm prompt đó vào trước. Kích hoạt khi: storyboard, shot breakdown, scene planning, video prompt, short video, reel planning, shooting script, shot list, visualize a video concept."
 ---
- 
+
 # Storyboard Poster Skill
- 
-Skill này giúp bạn xây dựng prompt để gen ra một tờ poster storyboard dạng infographic —
-bố cục 16:9, nhiều panel, có header/footer mô tả kỹ thuật quay.
- 
-Nhân vật được mô tả hoàn toàn bằng văn bản trong Common Brief.
-Nếu người dùng đã có prototype nhân vật, hãy dùng skill **character-prototype** thay thế.
- 
+
+Tạo ra tối đa ba khối prompt mà người dùng có thể dán vào các AI tạo ảnh / video:
+
+1. **Character Reference Sheet** — chỉ khi người dùng yêu cầu
+2. **Storyboard Poster** — luôn tạo (infographic 16:9, nhiều panel)
+3. **Video Prompt** — luôn tạo (Seedance / Kling / Runway / Pika)
+
+Hành vi mặc định: tạo khối 2 và 3. Chỉ thêm khối 1 khi người dùng yêu cầu rõ ràng.
+
 ---
- 
-## Cấu trúc prompt — 3 lớp
- 
+
+## Khối 1 — Prompt Character Reference Sheet *(chỉ khi được yêu cầu)*
+
+Một ảnh ngang duy nhất chứa: tư thế hero · góc xoay front/side/back · 2 crop chi tiết (mặt + trang phục) · bảng biểu cảm (4+ chân dung bust) · dải footer (bảng màu + chất liệu + tagline). Cùng phong cách render với storyboard.
+
+Template:
+
 ```
-[LAYER 1 — AI Instructions]
-[LAYER 2 — Common Brief]
-[LAYER 3 — Panel Descriptions]
+Tạo một character reference sheet chuyên nghiệp dưới dạng một poster thống nhất.
+Định dạng: ngang, [NỀN], viền đen mỏng giữa các vùng, nhãn sans-serif in đậm.
+MỘT ảnh duy nhất — không tách thành nhiều ảnh riêng.
+
+STYLE: [RENDER_STYLE — ví dụ: Pixar 3D stylized / hyper-realistic / anime cel-shaded /
+flat vector / Ghibli hand-painted]
+Ánh sáng: [studio soft-box / overhead spot / natural window]
+
+NHÂN VẬT:
+• Tên: [tên]
+• Tuổi & dáng: [tuổi, giới tính, dáng người]
+• Tông da: [mô tả cụ thể]
+• Tóc: [màu, độ dài, kiểu]
+• Mắt: [màu + đặc điểm]
+• Đặc điểm nhận dạng: [một đặc trưng nổi bật]
+• Trang phục: [từ trên xuống dưới kèm chất liệu và màu sắc]
+• Bảng màu: [4–6 màu, nên dùng mã hex]
+
+CÁC VÙNG:
+• Hero pose: toàn thân góc 3/4 (30°), tư thế phù hợp với concept video
+• Góc xoay: front (0°) / side (90°) / back (180°), A-pose trung tính, cùng tỷ lệ,
+  đường guideline tại đỉnh đầu/vai/hông/gót chân
+• Crop chi tiết: (1) mặt — đặc điểm nhận dạng + texture da; (2) trang phục — vải + phụ kiện chính
+• Bảng biểu cảm: [N≥4] chân dung bust, góc 3/4, ánh sáng giống hệt,
+  gán nhãn cảm xúc phù hợp với mạch video
+• Dải footer: swatch màu · ghi chú chất liệu · tagline một dòng
 ```
- 
+
+Sau khi tạo xong, người dùng upload sheet này làm ảnh tham chiếu cho lần gen storyboard.
+
 ---
- 
-## Lớp 1 — AI Instructions
- 
+
+## Khối 2 — Prompt Storyboard Poster
+
+Template:
+
 ```
-Create a crisp, clean infographic storyboard poster.
-Layout: wide 16:9, white background, black borders, bold black typography.
-Render style: [RENDER_STYLE] — see Common Brief for color palette.
- 
-Top header must include:
-• Title of the video (in ALL CAPS)
-• Total video time (e.g. TOTAL VIDEO TIME: 12 SECONDS)
-• Shot count + 3 mood adjectives (e.g. 8 SHOTS · SHARP · PRECISE · HYPNOTIC)
-• Legend icons row: ACTION · HEAT · TIME HINT · INGREDIENT
- 
-Each panel must include:
-• Panel number and short title
-• Main visual described in the panel
-• 1–2 legend icon tags relevant to that shot
- 
-Footer must include:
-• VIDEO FLOW: shot breakdown formula
-• CAMERA TIPS: key angles used per shot type
-• LIGHT & STYLE: color palette + lighting character
-• DIRECTOR NOTES: one-line creative summary of the whole piece
-```
- 
-> **`[RENDER_STYLE]`** — thay bằng phong cách render:
-> `premium Pixar 3D stylized` · `flat vector illustration` · `hyper-realistic` ·
-> `anime cel-shaded` · `minimal line art, monochrome`
- 
----
- 
-## Lớp 2 — Common Brief
- 
-```
+Tạo một poster storyboard infographic sắc nét.
+Bố cục: rộng 16:9, nền trắng, viền đen, chữ in đậm đen.
+Phong cách render: [RENDER_STYLE — phải khớp với reference sheet nếu có]
+
+[NẾU có reference sheet, thêm vào:]
+NHẤT QUÁN NHÂN VẬT: Tất cả panel có [tên] phải khớp chính xác với reference sheet
+đính kèm — cùng tóc, da, trang phục, đặc điểm nhận dạng. Dùng hero pose làm neo.
+
+HEADER:
+• Tiêu đề IN HOA
+• TỔNG THỜI LƯỢNG VIDEO: [Y] GIÂY
+• [N] CẢNH · [từ khóa mood 1] · [từ khóa mood 2] · [từ khóa mood 3]
+• Hàng legend: [4 nhãn icon ngắn phù hợp với video — xem hướng dẫn legend bên dưới]
+
 COMMON BRIEF:
-• Character: [giới tính, độ tuổi, ngoại hình, trang phục, biểu cảm chủ đạo]
-• Setting: [địa điểm, đạo cụ cố định, kiểu ánh sáng]
-• Color palette: [4–7 màu/vật liệu chủ đạo]
-• Tone & feel: [2–3 từ cảm xúc]
-• Total duration: [N shots × ~Xs = Y seconds]
-• Arc summary: [1 câu hành trình cảm xúc: từ X → đến Y]
-```
- 
----
- 
-## Lớp 3 — Panel Descriptions
- 
-```
-Shot [N] — [TÊN CẢNH]:
-[Hành động chính]. [Chi tiết màu/texture]. [Vai trò trong arc] [GÓC MÁY]
-```
- 
-**Ký hiệu góc máy:**
- 
-| Ký hiệu | Nghĩa |
-|---|---|
-| `[OVH]` | Overhead locked — nhìn thẳng từ trên xuống |
-| `[LOW]` | Dramatic low angle — nhìn từ dưới lên |
-| `[SIDE]` | Side profile — nhìn ngang |
-| `[CLOSE]` | Tight close-up — macro, chi tiết |
-| `[POV]` | Point of view — góc nhìn nhân vật |
- 
----
- 
-## Checklist trước khi gửi prompt
- 
-- [ ] Số shot trong header khớp với số panel thực tế
-- [ ] Có ít nhất 1 shot đánh dấu "hero frame" / đỉnh điểm
-- [ ] Arc summary phản ánh đúng hành trình Shot 1 → Shot N
-- [ ] Mỗi shot có: hành động + chi tiết môi trường + vai trò arc + góc máy
-- [ ] Common Brief có đủ: character · setting · color palette · tone · duration
-- [ ] Màu trong Common Brief khớp với màu mô tả trong các panel
----
- 
-## Bước bổ sung — Gen Video Prompt (Seedance / Kling / Runway / Pika)
- 
-Sau khi đã tạo xong storyboard prompt, **tự động gen thêm một video prompt** dành cho các ứng dụng gen video AI.
- 
-> Mục tiêu: prompt ngắn gọn, rõ ràng — đủ để AI video hiểu bối cảnh, style, và hành động từng scene.
-> Tập trung vào: **setting · visual style · camera · action**.
- 
-### Cấu trúc Video Prompt
- 
-```
-VIDEO PROMPT — [TÊN VIDEO]
- 
-STYLE & SETTING:
-[1–2 câu mô tả tổng thể: bối cảnh, render style, tông màu, ánh sáng chủ đạo]
- 
-SCENES:
- 
-Scene [N] — [TÊN CẢNH] (~[X]s):
-Camera: [góc máy + movement]
-Action: [mô tả hành động chính xảy ra trong scene]
- 
-[Lặp lại cho các scene còn lại]
-```
- 
-### Hướng dẫn viết từng phần
- 
-**STYLE & SETTING** (1–2 câu):
-- Bối cảnh là gì, ở đâu, thời điểm nào
-- Visual style: `Pixar 3D` · `cinematic live-action` · `anime` · `flat 2D` · `hyper-realistic`
-- Tông màu và ánh sáng nổi bật
-**Camera** (ngắn gọn):
-- Góc: `overhead` · `low angle` · `side profile` · `close-up` · `POV`
-- Movement: `static` · `slow push-in` · `tracking` · `pan left/right` · `tilt up/down`
-**Action** (1 câu, động từ mạnh):
-- Mô tả **hành động chính** xảy ra trong scene
-- Ưu tiên động từ cụ thể: `slices` · `walks forward` · `lifts` · `turns to face camera`
-### Checklist Video Prompt
- 
-- [ ] STYLE & SETTING đủ ngắn — tối đa 2 câu
-- [ ] Mỗi scene có đủ 3 phần: Camera · Action · Thời lượng gợi ý
-- [ ] Camera có cả góc + movement
-- [ ] Action dùng động từ cụ thể, mô tả **hành động** không mô tả ngoại hình
-- [ ] Tổng thời lượng các scene khớp với storyboard
----
- 
-## Biến thể theo loại video
- 
-### Video ẩm thực (cooking / food prep)
-- Render style: `Pixar 3D` hoặc `hyper-realistic`
-- Arc: nguyên liệu thô → thành phẩm → khoảnh khắc thưởng thức
-- Hero frame: cắt lát / plating / cắn miếng đầu tiên
-### Video nhân vật / character showcase
-- Render style: chọn theo cá tính nhân vật
-- Arc: thiết lập bối cảnh → hành động đặc trưng → reveal cảm xúc
-- Hero frame: close-up biểu cảm hoặc action signature move
-- Lưu ý: nếu cần giữ nhất quán cao với nhân vật đã có, dùng skill **character-prototype**
-### Video sản phẩm (product showcase)
-- Render style: `clean studio product photography, white cyclorama`
-- Character: có thể bỏ hoặc dùng hands-only
-- Arc: unboxing → features → in-use → beauty shot
-### Video quy trình / how-it-works
-- Render style: `flat vector, bold outlines, infographic style`
-- Không cần character cố định
-- Arc: vấn đề → các bước → kết quả
----
- 
-## Ví dụ prompt hoàn chỉnh — The Sushi Chef
- 
-```
-Create a crisp, clean infographic storyboard poster.
-Layout: wide 16:9, white background, black borders, bold black typography.
-Render style: premium Pixar 3D stylized.
- 
-Top header: • THE SUSHI CHEF • TOTAL VIDEO TIME: 12 SECONDS
-• 8 SHOTS · SHARP · PRECISE · HYPNOTIC
-• Legend icons: ACTION · HEAT · TIME HINT · INGREDIENT
- 
----
- 
-COMMON BRIEF:
-• Character: young Japanese male, short black hair, pristine white chef jacket,
-  calm focused expression, always at the same omakase counter
-• Setting: clean hinoki wood counter, bamboo rolling mat, warm overhead spot lighting
-• Color palette: coral salmon · pure ivory rice · jade green avocado ·
-  glossy jet-black nori · pale hinoki wood · soft ivory steam
-• Tone & feel: sharp · meditative · deeply satisfying
-• Total duration: 8 shots × ~1.5s = 12 seconds
-• Arc: from raw rice to the first bite — one roll, eight perfect pieces
- 
----
- 
+• Nhân vật: [một câu — hoặc "xem reference sheet đính kèm"]
+• Bối cảnh: [địa điểm, đạo cụ, ánh sáng]
+• Bảng màu: [4–7 màu, phải khớp reference sheet]
+• Tông: [2–3 từ khóa]
+• Mạch: [một câu từ X → Y]
+
 PANELS:
- 
-Shot 1 — Rice fold: Bamboo paddle mid-fold in wooden bowl, steam rising. Warm ivory tones. Calm opening. [OVH]
-Shot 2 — Nori held up: Sheet held to light — jet black, translucent, glossy. Graphic and striking. [SIDE]
-Shot 3 — Rice spread: Paddle dragging rice across black nori in one motion. White on black. Contrast shot. [OVH]
-Shot 4 — Fillings placed: Salmon strips, avocado, cucumber lined up. Coral and jade — most colorful panel. [SIDE]
-Shot 5 — The roll: Bamboo mat pressed forward, even pressure, mat texture visible. Compression. [SIDE]
-Shot 6 — The cut ★: Knife down, cross-section revealed. Salmon coral · jade green · white rice · black nori. Hero frame. [LOW]
-Shot 7 — The lineup: Eight pieces upright in a row on hinoki board. Overhead beauty shot, glistening. [OVH]
-Shot 8 — The eat: Chef lifts piece, eyes close slowly. Quiet satisfaction. Steam rising. Closing grace note. [CLOSE]
- 
----
- 
-Footer:
-• VIDEO FLOW: 8 shots × ~1.5s = 12 seconds. Rice to roll to silence.
-• CAMERA TIPS: overhead locked for rice + lineup, low angle for the cut, side for compression, close-up for eat.
-• LIGHT & STYLE: warm overhead spot, coral salmon, jade green, pure white, jet-black nori, pale hinoki wood.
-• DIRECTOR NOTES: one chef, one roll, eight perfect pieces. Sharp, calm, deeply satisfying.
+Shot [N] — [tên cảnh]:
+[Hành động chính]. [Chi tiết màu/texture]. [Trạng thái nhân vật nếu có]. [Vai trò trong mạch] [GÓC MÁY]
+...
+Đánh dấu cảnh cao trào bằng ★.
+
+FOOTER:
+• VIDEO FLOW: [N] cảnh × ~[X]s = [Y]s. [Một câu tóm tắt mạch]
+• CAMERA TIPS: [các góc đã dùng và khi nào]
+• LIGHT & STYLE: [bảng màu + tóm tắt ánh sáng]
+• DIRECTOR NOTES: [một câu sáng tạo]
 ```
- 
+
+### Ký hiệu góc máy
+
+| Ký hiệu | Ý nghĩa |
+|---|---|
+| `[OVH]` | Overhead — nhìn thẳng từ trên xuống |
+| `[LOW]` | Low angle — nhìn từ dưới lên |
+| `[SIDE]` | Side profile — nhìn ngang |
+| `[CLOSE]` | Tight close-up — cận cảnh |
+| `[POV]` | First-person view — góc nhìn thứ nhất |
+
+### Hướng dẫn hàng legend
+
+Chọn 4 nhãn ngắn phù hợp với loại video:
+- **Ẩm thực/nấu ăn**: `ACTION · HEAT · TIME · INGREDIENT`
+- **Nhân vật**: `ACTION · EMOTION · LOCATION · MOMENT`
+- **Sản phẩm**: `FEATURE · ANGLE · CONTEXT · DETAIL`
+- **Quy trình**: `INPUT · STEP · TOOL · OUTPUT`
+
 ---
- 
-## Ví dụ Video Prompt — The Sushi Chef
- 
+
+## Khối 3 — Video Prompt (Seedance / Kling / Runway / Pika)
+
+Template:
+
+```
+VIDEO PROMPT — [TIÊU ĐỀ]
+
+GHI CHÚ NHÂN VẬT: [tên] — [một câu: tóc + trang phục chính + đặc điểm nhận dạng]
+[Bỏ dòng này nếu không có nhân vật]
+
+STYLE & SETTING:
+[1–2 câu: bối cảnh, phong cách render, tông màu, ánh sáng]
+
+SCENES:
+
+Scene [N] — [tên cảnh] (~[X]s):
+Camera: [góc + chuyển động, ví dụ: "low angle, slow push-in"]
+Nhân vật: [trạng thái/biểu cảm — bỏ dòng này nếu không có nhân vật trong cảnh]
+Action: [một câu, động từ hành động mạnh]
+...
+```
+
+Quy tắc: camera phải có cả góc VÀ chuyển động. Action dùng động từ cụ thể (cắt, nâng, xoay), không bao giờ mô tả ngoại hình. Tổng thời lượng các scene phải bằng tổng thời gian storyboard.
+
+---
+
+## Biến thể nhanh
+
+| Loại video | Reference sheet? | Gợi ý phong cách render | Mạch mẫu |
+|---|---|---|---|
+| Nhân vật / narrative | Theo yêu cầu | phù hợp cá tính | thiết lập → hành động đặc trưng → reveal |
+| Ẩm thực / nấu ăn | Theo yêu cầu (chỉ nếu mặt đầu bếp xuất hiện) | Pixar 3D hoặc hyper-realistic | nguyên liệu → thành phẩm → cắn miếng đầu |
+| Sản phẩm | Bỏ qua | clean studio product photography | unbox → tính năng → sử dụng → beauty |
+| Quy trình | Bỏ qua | flat vector infographic | vấn đề → các bước → kết quả |
+
+---
+
+## Checklist tổng
+
+- [ ] Số shot trong header khớp với số panel thực tế
+- [ ] Cảnh cao trào được đánh dấu ★
+- [ ] Mỗi shot có: hành động + môi trường + trạng thái nhân vật (nếu có) + góc máy
+- [ ] Bảng màu nhất quán giữa reference sheet (nếu dùng), panel storyboard, và video prompt
+- [ ] Nếu dùng reference sheet, khối `NHẤT QUÁN NHÂN VẬT` có trong prompt storyboard
+- [ ] Video prompt: mỗi scene có Camera + Action (+ Nhân vật nếu có) + thời lượng
+- [ ] Tổng thời lượng các scene bằng tổng thời gian video
+
+---
+
+## Ví dụ — The Sushi Chef (storyboard + video prompt)
+
+### Prompt Storyboard Poster
+
+```
+Tạo một poster storyboard infographic sắc nét.
+Bố cục: rộng 16:9, nền trắng, viền đen, chữ in đậm đen.
+Phong cách render: premium Pixar 3D stylized.
+
+HEADER:
+• THE SUSHI CHEF
+• TỔNG THỜI LƯỢNG VIDEO: 12 GIÂY
+• 8 CẢNH · SHARP · PRECISE · HYPNOTIC
+• Hàng legend: ACTION · HEAT · TIME · INGREDIENT
+
+COMMON BRIEF:
+• Nhân vật: nam đầu bếp trẻ người Nhật, áo khoang trắng double-breasted, tạp dề than,
+  băng đô trắng, tóc đen ngắn, tập trung điềm tĩnh
+• Bối cảnh: quầy gỗ hinoki, mành tre, ánh sáng overhead spot ấm
+• Bảng màu: coral salmon · ivory rice · jade avocado · jet-black nori ·
+  hinoki wood · soft ivory steam
+• Tông: sắc nét · thiền định · thỏa mãn sâu
+• Mạch: từ gạo sống đến miếng cắn đầu tiên — một cuộn, tám miếng hoàn hảo
+
+PANELS:
+Shot 1 — Gập cơm: Đôi tay gập cơm nóng bằng mái chèo tre. Ivory ấm. Mở đầu tĩnh. [OVH]
+Shot 2 — Nori soi sáng: Miếng nori giơ lên ánh sáng, đen tuyền và trong mờ. Đồ họa. [SIDE]
+Shot 3 — Trải cơm: Mái chèo kéo cơm trắng trên nori đen. Tương phản trắng-đen. [OVH]
+Shot 4 — Xếp nhân: Cá hồi, bơ, dưa leo xếp hàng. Panel nhiều màu nhất. [SIDE]
+Shot 5 — Cuộn: Mành tre ép về trước, lực đều. Nén. [SIDE]
+Shot 6 — Cắt ★: Dao hạ xuống, mặt cắt lộ ra — coral, jade, trắng, đen. Hero. [LOW]
+Shot 7 — Đội hình: Tám miếng đứng thẳng trên thớt hinoki. Beauty shot. [OVH]
+Shot 8 — Nếm: Đầu bếp nhấc một miếng, mắt nhắm lại. Hơi nước bốc lên. Grace note. [CLOSE]
+
+FOOTER:
+• VIDEO FLOW: 8 cảnh × ~1.5s = 12 giây. Từ gạo đến cuộn đến tĩnh lặng.
+• CAMERA TIPS: overhead cho chuẩn bị + đội hình, low cho cú cắt, side cho cuộn, close cho nếm.
+• LIGHT & STYLE: overhead spot ấm, coral salmon, jade, trắng, đen tuyền, hinoki.
+• DIRECTOR NOTES: một đầu bếp, một cuộn, tám miếng hoàn hảo.
+```
+
+### Video Prompt
+
 ```
 VIDEO PROMPT — THE SUSHI CHEF
- 
+
+GHI CHÚ NHÂN VẬT: Nam đầu bếp Nhật — tóc đen ngắn, áo khoang trắng tinh
+với tạp dề than, băng đô trắng ngang trán.
+
 STYLE & SETTING:
-Pixar 3D stylized. Clean omakase counter with warm overhead spotlighting.
-Warm ivory and coral tones, minimal background, calm and meditative atmosphere.
- 
+Pixar 3D stylized. Quầy omakase sạch sẽ với ánh sáng overhead spot ấm.
+Tông ivory và coral, không khí thiền định.
+
 SCENES:
- 
-Scene 1 — Rice fold (~2s):
+
+Scene 1 — Gập cơm (~1.5s):
 Camera: overhead, static
-Action: Bamboo paddle folds steaming rice in wooden bowl, soft steam rises
- 
-Scene 2 — Nori held up (~1.5s):
+Action: Mái chèo tre gập cơm nóng trong bát gỗ
+
+Scene 2 — Nori soi sáng (~1.5s):
 Camera: side profile, static
-Action: Sheet of nori held up to light, translucent and glossy, graphic contrast
- 
-Scene 3 — Rice spread (~1.5s):
+Nhân vật: tập trung, mắt khóa vào nori
+Action: Đầu bếp giơ nori lên ánh sáng, trong mờ dưới đèn spot
+
+Scene 3 — Trải cơm (~1.5s):
 Camera: overhead, slow push-in
-Action: Paddle drags white rice across black nori in one clean motion
- 
-Scene 4 — Fillings placed (~2s):
+Action: Mái chèo kéo cơm ngang nori đen trong một chuyển động mượt
+
+Scene 4 — Xếp nhân (~1.5s):
 Camera: side profile, static
-Action: Salmon strips, avocado, and cucumber lined up in a row on the nori
- 
-Scene 5 — The roll (~2s):
+Action: Đầu bếp đặt cá hồi, bơ, dưa leo thành hàng chính xác trên nori
+
+Scene 5 — Cuộn (~1.5s):
 Camera: side profile, static
-Action: Bamboo mat presses forward, rolling tightly with even pressure
- 
-Scene 6 — The cut (~2s):
+Action: Mành tre ép về trước, cuộn chặt với lực đều
+
+Scene 6 — Cắt (~1.5s):
 Camera: low angle, slow push-in
-Action: Knife comes down cleanly, cross-section of roll revealed — hero moment
- 
-Scene 7 — The lineup (~2s):
+Nhân vật: tập trung cao độ
+Action: Dao hạ xuống sạch sẽ, mặt cắt cuộn lộ ra
+
+Scene 7 — Đội hình (~1.5s):
 Camera: overhead, slow pull-back
-Action: Eight sushi pieces stand upright in a row on hinoki wood board
- 
-Scene 8 — The eat (~2s):
+Action: Tám miếng sushi đứng thẳng hàng trên thớt hinoki
+
+Scene 8 — Nếm (~1.5s):
 Camera: close-up, static
-Action: Chef lifts one piece slowly, eyes close softly — quiet satisfaction
+Nhân vật: hài lòng tĩnh lặng, mắt nhắm nhẹ
+Action: Đầu bếp từ từ nhấc một miếng lên môi, hơi nước bốc lên
 ```
- 
